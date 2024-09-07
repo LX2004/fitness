@@ -1,29 +1,27 @@
-# promoter
-The supplementary folder contains the supplemental materials for the paper.
-The generated promoter sequences and models are located in the folders 'sequences' and 'model', respectively.
+# fitness prediction
+This project primarily accomplishes the task of predicting cellular fitness values based on the Transformer model.
 # Preparation
 run:
 
 ```
-cd promoter
+cd fitness
 
-conda create --name promoter
+conda create --name fitness
 
-conda activate promoter
+conda activate fitness
 
 conda install --file request.txt
 ```
 
-# If you want to train ddpm for generating E. coli/cyanobacteria promoters, you can perform the following actions.
+# To train a model for predicting E. coli fitness values using a dataset, you may perform the following steps.
 run :
 ```
-cd train_generate_E_coli_promoter or train_generate_E_coli_promotercyanobacteria
+cd E_coli
 
-python train_generate_model.py
+python prediction_transformer_ori_dim_bio_kfold.py
 
-python generate_promoters
 ```
-# For prediction task
+# To train a model for predicting E. coli fitness values using a dataset, you may perform the following steps.
 run : 
 ```
 cd train_prediction_model
