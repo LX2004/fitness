@@ -21,14 +21,13 @@ cd E_coli
 python prediction_transformer_ori_dim_bio_kfold.py
 
 ```
-# To train a model for predicting E. coli fitness values using a dataset, you may perform the following steps.
+# To train a model for predicting Cyanobacteria fitness values using a dataset, you may perform the following steps.
 run : 
 ```
-cd train_prediction_model
+cd Cyanobacteria
 
-python make_dataset.py
+python prediction_transformer_ori_dim_bio_kfold.py
 
-python prediction_transformer_dimer_original_kfold.py
-
-python test_model_performance.py
 ```
+# Result.
+The model obtained from training is stored in the "models" folder, and details such as training parameters and metrics are recorded in the corresponding text files.
