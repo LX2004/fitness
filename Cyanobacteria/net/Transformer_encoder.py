@@ -7,14 +7,14 @@ class Predict_encoder(nn.Module):
     def __init__(self,nhead,layers,hidden_dim,latent_dim,embedding_dim,seq_len,probs,device='cuda'):
         super(Predict_encoder,self).__init__()
         
-        self.layers = layers # encoder的数目
-        self.embedding_dim = embedding_dim #嵌入的维度
-        self.seq_len = seq_len # 序列的长度
-        self.nhead = nhead # 注意力头数
-        self.hidden_dim = hidden_dim #encoder中全连接层的隐藏层神经元数目
-        self.probs = probs # encoder中全连接层的dropout系数
+        self.layers = layers 
+        self.embedding_dim = embedding_dim 
+        self.seq_len = seq_len 
+        self.nhead = nhead 
+        self.hidden_dim = hidden_dim 
+        self.probs = probs 
         self.device = device
-        self.latent_dim = latent_dim # 将编码器得到的信息最终以想要的维度输出，不接这个那么输出的维度一直是embedding dim
+        self.latent_dim = latent_dim
         self.src_mask = None
         
         self.pos_encoder = PositionalEncoding(
@@ -71,8 +71,7 @@ class Predict_encoder(nn.Module):
         return output_embed
     
     def encoder(self,embedded_batch):
-        
-        # 输入嵌入后的信息
+
         output_embed = self.transformer_encoding(embedded_batch)
 
         glob_attn = self.glob_attn_module(output_embed)  # output should be B x S x 1
