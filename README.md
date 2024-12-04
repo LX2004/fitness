@@ -1,4 +1,7 @@
-# fitness prediction
+# Framework
+![image](https://github.com/user-attachments/assets/bddf4381-c0e8-4161-aa2b-8ad0b7af8535)
+
+# Fitness prediction
 This project primarily accomplishes the task of predicting cellular fitness values based on the Transformer model.
 # Preparation
 run:
