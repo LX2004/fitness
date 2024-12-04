@@ -14,7 +14,7 @@ def encode_essential(essential):
 
     if essential in base_choice:
 
-        # 进行独热向量编码
+
         if essential == 'NA':
             return np.array([1,0,0])
         
@@ -24,9 +24,9 @@ def encode_essential(essential):
         if essential == 'TRUE':
             return np.array([0,0,1])
         
-        # print("独热向量编码结果:", encoded_vector)
+
     else:
-        print("输入的字符串不在给定的列表中，无法进行独热向量编码。")
+        print("The input string is not in the given list and cannot be one-hot encoded.")
     
     # return encoded_vector
 
@@ -34,7 +34,7 @@ def encode_ori(ori):
 
     base_choice = ['+', '-']
 
-    # 进行独热向量编码
+
     if ori in base_choice:
         if ori == '+':
             return np.array([1,0])
@@ -43,7 +43,7 @@ def encode_ori(ori):
             return np.array([0,1])
 
     else:
-        print("输入的字符串不在给定的列表中，无法进行独热向量编码。")
+        print("The input string is not in the given list and cannot be one-hot encoded.")
 
 
 
@@ -53,7 +53,6 @@ def encode_coding(coding):
 
     if coding in base_choice:
 
-        # 进行独热向量编码
         if coding == 'NA':
             return np.array([1,0,0])
         
@@ -62,10 +61,9 @@ def encode_coding(coding):
         
         if coding == 'TRUE':
             return np.array([0,0,1])
-        
-        # print("独热向量编码结果:", encoded_vector)
+
     else:
-        print("输入的字符串不在给定的列表中，无法进行独热向量编码。")
+        print("The input string is not in the given list and cannot be one-hot encoded.")
 
 
 
