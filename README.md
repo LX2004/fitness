@@ -21,6 +21,8 @@ run :
 ```
 cd E_coli
 
+cd code
+
 python prediction_transformer_ori_dim_bio_kfold.py
 
 ```
@@ -28,6 +30,8 @@ python prediction_transformer_ori_dim_bio_kfold.py
 run : 
 ```
 cd Cyanobacteria
+
+cd code
 
 python prediction_transformer_ori_dim_bio_kfold.py
 
