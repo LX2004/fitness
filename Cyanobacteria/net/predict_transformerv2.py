@@ -13,7 +13,6 @@ class ResidualBlock(nn.Module):
         super(ResidualBlock, self).__init__()
         self.num_channels = num_channels
 
-        # 定义两个卷积层
         self.conv1 = nn.Conv1d(num_channels, num_channels, kernel_size=kernel_size, padding=padding)
         self.conv2 = nn.Conv1d(num_channels, num_channels, kernel_size=kernel_size, padding=padding)
         self.batch_norm = nn.BatchNorm1d(num_channels) 
@@ -68,60 +67,27 @@ class Predict_transformer_bio(torch.nn.Module):
         # self.bio_fc1 = nn.Linear(13, params['fc_hidden1'])
         
     def forward(self, X, bio):
-        # print('X_in.ori = ', X[1,0,0,:])
-        # print('X_in.dim = ', X[1,0,1,:])
-        # print('X_in.pos = ', X[1,0,2,:])
         x = X.to(torch.int)
-  
-        # x = X[:,0,:,:]
-        # print('x = ',x[1])
+
         input_ori = x[:, 0, :]
         input_dim = x[:, 1, :]
-        # input_pos = x[:, 2, :] - 1
-        # print('input_ori.shape = ',input_ori.shape)
-        # print('input_dim.shape = ',input_dim.shape)
-        # print('input_pos.shape = ',input_pos.shape)
-        # print('input_ori = ',input_ori)
-        
-        # print('start embedding')
+
         embeded_ori = self.embedding_ori(input_ori)
         embeded_dim = self.embedding_dim(input_dim)
-        # embeded_pos = self.embedding_pos(input_pos)
-        
-        # 进入卷积模块
-        
-        # embeded_dim = self.cnn_dim(embeded_dim)
-        # embeded_ori = self.cnn_ori(embeded_ori)
-        # embeded_ori_dim = self.cnn_ori_dim( embeded_ori +  embeded_dim )
-        
-        # cnn_all = self.cnn_all(embeded_ori_dim + embeded_pos)
-      
-        # print('embeded_ori.shape = ', embeded_ori.shape)
-        
-        # print('start transformer encoder')
-        # all_trans = self.trans_all(embeded_ori_dim)
         
         ori_pos = self.trans_ori_pos(embeded_ori)
         dim_pos = self.trans_dim_pos(embeded_dim)
-        # print('end transformer encoder')
         
         output = torch.cat((ori_pos, dim_pos, bio), dim=-1) # 将transformer的输出和生物信息相融合
-        # output = self.mlp(ori_dim_pos)
         
         output = self.final_fc1(output)
         output = self.ac(output)
-        # output = self.relu(output)
         output = self.dropout(output)
 
         output = self.final_fc2(output)
         output = self.ac(output)
-        # output = self.dropout(output)
 
         output = self.final_fc3(output)
-        
-        # output = self.relu(output)
-        # print('output.shape', output.shape)
-        # pdb.set_trace()
         return self.relu(output)
       
 class Predict_transformer(torch.nn.Module):
@@ -147,7 +113,7 @@ class Predict_transformer(torch.nn.Module):
         # self.cnn_ori_dim = ResidualBlock(num_channels=100,kernel_size=2*params['conv1d_padding']+1,padding=params['conv1d_padding'])
 
         
-        # dropout层
+        # dropout
         self.ac = nn.LeakyReLU()
         self.dropout = nn.Dropout(p=self.dropout_rate_fc)
         
