@@ -1,20 +1,32 @@
-# Framework
+---
+# 🧱 Framework Overview
 ![image](https://github.com/user-attachments/assets/db28a092-7d87-4346-bc50-97c144666773)
+CRISFitFormer is a transformer-based deep learning framework designed to predict bacterial cell fitness based on CRISPRi guide RNA sequences. The system supports multiple species and integrates biological features for enhanced performance.
+---
 
-# Fitness prediction
-This project primarily accomplishes the task of predicting cellular fitness values based on the Transformer model.
-# Preparation
-run:
+# 📈 Core Function: Fitness Prediction
+This project provides a modular pipeline to:
 
-```
+- Predict cell fitness values using a Transformer model
+- Incorporate biological and sequence features
+- Support cross-validation training
+- Compare across species (e.g., *E. coli*, *Cyanobacteria*, *Staphylococcus aureus*, etc.)
+
+---
+## 🧰 Environment Setup
+
+```bash
 cd fitness
 
+# Create a conda environment
 conda create --name fitness
 
+# Activate the environment
 conda activate fitness
 
+# Install dependencies
 conda install --file request.txt
-```
+
 
 # To train a model for predicting E. coli fitness values using a dataset, you may perform the following steps.
 run :
