@@ -293,3 +293,108 @@ def train(params, features_array, bios_array, labels_array):
         test_pearson_kfold.append(max(metric))
 
     return -max(test_pearson_kfold)
+
+
+# train(params,train_dataset,test_dataset)
+if __name__ == '__main__':
+
+    # Load and process data
+    filename = '../data/Bacillus_subtilis.csv'
+    guides, fit18s, essentials = read_data(filename=filename)
+
+    # Create a DataFrame and export to CSV
+    df = pd.DataFrame({
+        'guide_rna': guides,
+        'fitness': fit18s,
+        'essential': essentials
+    })
+    df.to_csv('../data/Bacillus_sample.csv', index=False)
+
+    # Convert sequences to model input format
+    features_array, labels_array, biofeatures_array = make_dataset_sequences_bio(guides, fit18s, essentials)
+
+    # Define K-fold cross-validation
+    k_folds = 5
+    kf = KFold(n_splits=k_folds, shuffle=True)
+
+    # Set up training device
+    params = {
+        'device_num': 2,
+        'dropout_rate1': 0.4320438222805047,
+        'dropout_rate2': 0.12133028008904646,
+        'dropout_rate_fc': 0.49166131520310447,
+        'embedding_dim1': 64,
+        'embedding_dim2': 128,
+        'fc_hidden1': 87,
+        'fc_hidden2': 8,
+        'hidden_dim1': 512,
+        'hidden_dim2': 1024,
+        'l2_regularization': 2e-05,
+        'latent_dim1': 256,
+        'latent_dim2': 64,
+        'num_head1': 4,
+        'num_head2': 8,
+        'seq_len': 20,
+        'train_base_learning_rate': 0.0009764177415433284,
+        'train_batch_size': 1024,
+        'train_epochs_num': 500,
+        'transformer_num_layers1': 3,
+        'transformer_num_layers2': 11
+    }
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    torch.cuda.set_device(params['device_num'])
+    print('device =', device)
+
+    # Define the loss type
+    # Options: ['pearson', 'pearson_mse', 'mse']
+    loss_kind = 'pearson_mse'
+
+    # Run one trial training for validation
+    train(params, features_array=features_array, bios_array=biofeatures_array, labels_array=labels_array)
+
+    '''Start hyperparameter optimization'''
+    # Define hyperparameter search space
+    space = {
+        'train_batch_size': hp.choice('train_batch_size', [1024]),
+        'seq_len': hp.choice('seq_len', [20]),
+        'device_num': hp.choice('device_num', [2]),
+        'train_epochs_num': hp.choice('train_epochs_num', [500]),
+
+        'train_base_learning_rate': hp.loguniform('train_base_learning_rate', -7, -4),
+
+        'dropout_rate1': hp.uniform('dropout_rate1', 0.1, 0.5),
+        'dropout_rate2': hp.uniform('dropout_rate2', 0.1, 0.5),
+        'dropout_rate_fc': hp.uniform('dropout_rate_fc', 0.1, 0.5),
+
+        'transformer_num_layers1': hp.randint('transformer_num_layers1', 1, 12),
+        'transformer_num_layers2': hp.randint('transformer_num_layers2', 1, 12),
+        
+        # 'l2_regularization': hp.loguniform('l2_regularization', -8, -2),
+        'l2_regularization': hp.choice('l2_regularization', [5e-5, 2e-5, 5e-6]),
+
+        'num_head1': hp.choice('num_head1', [2, 4, 8, 16]),
+        'num_head2': hp.choice('num_head2', [2, 4, 8, 16]),
+
+        'hidden_dim1': hp.choice('hidden_dim1', [64, 128, 256, 512, 1024]),
+        'latent_dim1': hp.choice('latent_dim1', [64, 128, 256, 512]),
+        'embedding_dim1': hp.choice('embedding_dim1', [64, 128, 256, 512]),
+
+        'hidden_dim2': hp.choice('hidden_dim2', [128, 256, 512, 1024]),
+        'latent_dim2': hp.choice('latent_dim2', [64, 128, 256, 512]),
+        'embedding_dim2': hp.choice('embedding_dim2', [64, 128, 256, 512]),
+
+        'fc_hidden1': hp.randint('fc_hidden1', 64, 256),
+        'fc_hidden2': hp.randint('fc_hidden2', 8, 64)
+    }
+
+    # Create a Trials object to log the search process
+    trials = Trials()
+
+    # Wrap training function as a hyperopt objective
+    objective = lambda params: train(params, features_array=features_array, bios_array=biofeatures_array, labels_array=labels_array)
+
+    # Run hyperparameter search
+    best = fmin(fn=objective, space=space, algo=tpe.suggest, max_evals=1000, trials=trials)
+
+    # Print the best parameters
+    print('Best parameters:', best)
