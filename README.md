@@ -66,7 +66,7 @@ cd code
 python prediction.py
 
 ```
-# Platform 🧬 CRISFitFormer
+#  🧬 CRISFitFormer---Online Platform
 **CRISFitFormer** is a deep learning framework and web-based platform for predicting bacterial cell fitness from genome-wide CRISPRi knockdown screens. It integrates both experimental fitness computation and transformer-based predictive modeling to support large-scale functional genomics analysis.
 ![image](https://github.com/user-attachments/assets/83aa48d5-7c9f-4377-b64e-04a5c1de227a)
 
