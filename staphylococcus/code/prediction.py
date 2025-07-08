@@ -283,3 +283,110 @@ def train(params, features_array, bios_array, labels_array):
         test_pearson_kfold.append(max(metric))
 
     return -max(test_pearson_kfold)
+
+
+if __name__ == '__main__':
+
+    # Load and preprocess data
+    filename = '../data/Staphylococcus_aureus_essential.csv'
+    guides, fit18s, essentials = read_data(filename=filename)
+
+    csv_essentials = [True if item == "essential" else False for item in essentials]
+
+    # Optional: save processed data to CSV
+    # df = pd.DataFrame({
+    #     'guide_rna': guides,
+    #     'fitness': fit18s,
+    #     'essential': csv_essentials
+    # })
+    # df.to_csv('../data/Staphylococcus_sample.csv', index=False)
+    # pdb.set_trace()
+
+    features_array, labels_array, biofeatures_array = make_dataset_sequences_bio(guides, fit18s, essentials)
+
+    # Set up K-fold cross-validation
+    k_folds = 5
+    kf = KFold(n_splits=k_folds, shuffle=True)
+
+    # Select GPU device
+    params = {
+        'device_num': 2,
+        'dropout_rate1': 0.3258494549467406,
+        'dropout_rate2': 0.2974783660130027,
+        'dropout_rate_fc': 0.3134874750986153,
+        'embedding_dim1': 64,
+        'embedding_dim2': 256,
+        'fc_hidden1': 109,
+        'fc_hidden2': 56,
+        'hidden_dim1': 1024,
+        'hidden_dim2': 256,
+        'l2_regularization': 5e-05,
+        'latent_dim1': 64,
+        'latent_dim2': 256,
+        'num_head1': 8,
+        'num_head2': 8,
+        'seq_len': 20,
+        'train_base_learning_rate': 0.0010350836441350173,
+        'train_batch_size': 512,
+        'train_epochs_num': 500,
+        'transformer_num_layers1': 4,
+        'transformer_num_layers2': 8
+    }
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    torch.cuda.set_device(params['device_num'])
+    print('device =', device)
+
+    # Define loss type
+    # loss_kind options: ['pearson', 'pearson_mse', 'mse']
+    loss_kind = 'pearson_mse'
+
+    # Run one training pass for validation
+    train(params, features_array=features_array, bios_array=biofeatures_array, labels_array=labels_array)
+
+    '''Start hyperparameter search'''
+    # Define the hyperparameter search space
+    space = {
+        'train_batch_size': hp.choice('train_batch_size', [1024]),
+        'seq_len': hp.choice('seq_len', [20]),
+        'device_num': hp.choice('device_num', [2]),
+        'train_epochs_num': hp.choice('train_epochs_num', [500]),
+
+        'train_base_learning_rate': hp.loguniform('train_base_learning_rate', -7, -4),
+
+        'dropout_rate1': hp.uniform('dropout_rate1', 0.1, 0.5),
+        'dropout_rate2': hp.uniform('dropout_rate2', 0.1, 0.5),
+        'dropout_rate_fc': hp.uniform('dropout_rate_fc', 0.1, 0.5),
+
+        'transformer_num_layers1': hp.randint('transformer_num_layers1', 1, 12),
+        'transformer_num_layers2': hp.randint('transformer_num_layers2', 1, 12),
+
+        # 'l2_regularization': hp.loguniform('l2_regularization', -8, -2),
+        'l2_regularization': hp.choice('l2_regularization', [5e-5, 2e-5, 5e-6]),
+
+        'num_head1': hp.choice('num_head1', [2, 4, 8, 16]),
+        'num_head2': hp.choice('num_head2', [2, 4, 8, 16]),
+
+        'hidden_dim1': hp.choice('hidden_dim1', [64, 128, 256, 512, 1024]),
+        'latent_dim1': hp.choice('latent_dim1', [64, 128, 256, 512]),
+        'embedding_dim1': hp.choice('embedding_dim1', [64, 128, 256, 512]),
+
+        'hidden_dim2': hp.choice('hidden_dim2', [128, 256, 512, 1024]),
+        'latent_dim2': hp.choice('latent_dim2', [64, 128, 256, 512]),
+        'embedding_dim2': hp.choice('embedding_dim2', [64, 128, 256, 512]),
+
+        'fc_hidden1': hp.randint('fc_hidden1', 64, 256),
+        'fc_hidden2': hp.randint('fc_hidden2', 8, 64)
+    }
+
+    # Create Trials object to track the optimization process
+    trials = Trials()
+
+    # Wrap the training function for use with hyperopt
+    objective = lambda params: train(params, features_array=features_array, bios_array=biofeatures_array, labels_array=labels_array)
+
+    # Run hyperparameter optimization
+    best = fmin(fn=objective, space=space, algo=tpe.suggest, max_evals=1000, trials=trials)
+
+    # Print the best hyperparameters found
+    print('Best hyperparameters:', best)
