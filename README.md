@@ -39,7 +39,7 @@ python prediction_transformer_ori_dim_bio_kfold.py
 # To train a model for predicting staphylococcus fitness values using a dataset, you may perform the following steps.
 run : 
 ```
-cd Cstaphylococcus
+cd staphylococcus
 
 cd code
 
