@@ -66,5 +66,38 @@ cd code
 python prediction.py
 
 ```
+# Platform 🧬 CRISFitFormer
+**CRISFitFormer** is a deep learning framework and web-based platform for predicting bacterial cell fitness from genome-wide CRISPRi knockdown screens. It integrates both experimental fitness computation and transformer-based predictive modeling to support large-scale functional genomics analysis.
+
+## 🌐 Online Platform
+
+👉 Visit the platform: [https://crisfitformer.bioinformatics-syn.org/](https://crisfitformer.bioinformatics-syn.org/)
+
+## 🚀 Key Features
+
+| Module | Description |
+|--------|-------------|
+| 📊 **Fitness Calculation** | Upload CRISPRi screen data and compute fitness scores directly |
+| 🤖 **Fitness Prediction** | Use transformer-based models to predict fitness from guide RNA sequences |
+| 🧬 **Essentiality Profiling** | Automatically infer gene essentiality from fitness values |
+| 📁 **Custom Input Support** | Accepts user-uploaded guide RNA and growth data |
+
+## 🧪 System Architecture
+
+CRISFitFormer supports two complementary workflows:
+
+### 1. Experimental Fitness Calculation
+
+- Input: Cell growth data from CRISPRi screens
+- Process: Fitness calculation → Gene essentiality inference
+- Output: CSV/Plot of gene-level essentiality
+
+### 2. Deep Learning-Based Prediction
+
+- Input: sgRNA sequences
+- Process: Transformer-based inference → Fitness score → Bad seed detection
+- Output: Predicted fitness values, sequence toxicity report
+
+
 # Result.
 The model obtained from training is stored in the "models" folder, and details such as training parameters and metrics are recorded in the corresponding text files.
