@@ -28,8 +28,8 @@ conda activate fitness
 conda install --file request.txt
 ```
 ---
-##🧪 Species-Specific Model Training
 
+## 🧪 Species-Specific Model Training
 ### To train a model for predicting E. coli fitness values using a dataset, you may perform the following steps.
 run :
 ```
