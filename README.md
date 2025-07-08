@@ -28,8 +28,9 @@ conda activate fitness
 conda install --file request.txt
 ```
 ---
+##🧪 Species-Specific Model Training
 
-# To train a model for predicting E. coli fitness values using a dataset, you may perform the following steps.
+### To train a model for predicting E. coli fitness values using a dataset, you may perform the following steps.
 run :
 ```
 cd E_coli
@@ -39,7 +40,7 @@ cd code
 python prediction_transformer_ori_dim_bio_kfold.py
 
 ```
-# To train a model for predicting Cyanobacteria fitness values using a dataset, you may perform the following steps.
+### To train a model for predicting Cyanobacteria fitness values using a dataset, you may perform the following steps.
 run : 
 ```
 cd Cyanobacteria
@@ -49,7 +50,7 @@ cd code
 python prediction_transformer_ori_dim_bio_kfold.py
 
 ```
-# To train a model for predicting staphylococcus fitness values using a dataset, you may perform the following steps.
+### To train a model for predicting staphylococcus fitness values using a dataset, you may perform the following steps.
 run : 
 ```
 cd staphylococcus
@@ -59,7 +60,7 @@ cd code
 python prediction.py
 
 ```
-# To train a model for predicting E_limosum fitness values using a dataset, you may perform the following steps.
+### To train a model for predicting E_limosum fitness values using a dataset, you may perform the following steps.
 run : 
 ```
 cd E_limosum
@@ -69,7 +70,7 @@ cd code
 python prediction.py
 
 ```
-# To train a model for predicting bacillus fitness values using a dataset, you may perform the following steps.
+### To train a model for predicting bacillus fitness values using a dataset, you may perform the following steps.
 run : 
 ```
 cd bacillus
