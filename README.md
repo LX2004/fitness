@@ -26,7 +26,7 @@ conda activate fitness
 
 # Install dependencies
 conda install --file request.txt
-
+---
 
 # To train a model for predicting E. coli fitness values using a dataset, you may perform the following steps.
 run :
