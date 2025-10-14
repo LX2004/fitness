@@ -80,6 +80,22 @@ cd code
 python prediction.py
 
 ```
+### DNA–gRNA Binding Energy Calculation
+The script `energy.py` is used to calculate the **direct binding energy** between a gRNA and its corresponding target DNA sequence.  
+It applies a nearest-neighbor thermodynamic model and outputs the calculated binding energies in **kcal/mol**.
+
+To use the script:
+
+1. Open `energy.py`.
+2. In the **main function**, modify the list of **gRNA sequences** (`grna_list`) according to your needs.
+3. Run the script:
+
+```bash
+python energy.py
+```
+4. The program will automatically compute and print the binding energies for each gRNA, and save a publication-quality bar chart in the current directory.
+
+
 #  🧬 CRISFitFormer---Online Platform
 **CRISFitFormer** is a deep learning framework and web-based platform for predicting bacterial cell fitness from genome-wide CRISPRi knockdown screens. It integrates both experimental fitness computation and transformer-based predictive modeling to support large-scale functional genomics analysis.
 ![image](https://github.com/user-attachments/assets/83aa48d5-7c9f-4377-b64e-04a5c1de227a)
