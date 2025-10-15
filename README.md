@@ -81,6 +81,18 @@ cd code
 python prediction.py
 
 ```
+
+### To train a model for predicting gRNA efficiency, you may perform the following steps.
+
+```
+cd bacillus
+
+cd code
+
+python prediction.py
+
+```
+
 ### DNA–gRNA Binding Energy Calculation
 The script `energy.py` is used to calculate the **direct binding energy** between a gRNA and its corresponding target DNA sequence.  
 It applies a nearest-neighbor thermodynamic model and outputs the calculated binding energies in **kcal/mol**.
