@@ -85,11 +85,11 @@ python prediction.py
 ### To train a model for predicting gRNA efficiency, you may perform the following steps.
 
 ```
-cd bacillus
+cd prediction_CRISPRi_efficiency_e_coli
 
 cd code
 
-python prediction.py
+python prediction_transformer_ori_dim_kfold.py
 
 ```
 
