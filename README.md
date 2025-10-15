@@ -1,6 +1,7 @@
 ---
 # 🧱 Framework Overview
-![image](https://github.com/user-attachments/assets/db28a092-7d87-4346-bc50-97c144666773)
+<img width="1952" height="1736" alt="image" src="https://github.com/user-attachments/assets/279718cd-cae4-44b7-b5a0-ff78642d4f2b" />
+
 CRISFitFormer is a transformer-based deep learning framework designed to predict bacterial cell fitness based on CRISPRi guide RNA sequences. The system supports multiple species and integrates biological features for enhanced performance.
 ---
 
