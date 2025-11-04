@@ -193,32 +193,36 @@ def plot_test_prediction_result(output,label,epoch):
     plt.savefig(f'result/epoch={epoch}')
     plt.show()
     
-def compute_correlation_coefficient(output,label):
-    target = output.detach().cpu().numpy()
-    prediction = label.detach().cpu().numpy()
+def compute_correlation_coefficient(output, label):
+    target = output.detach().cpu().numpy().astype(float).ravel()
+    prediction = label.detach().cpu().numpy().astype(float).ravel()
 
-    has_nan = np.isnan(prediction).any() or np.isnan(target).any()
+    mask = ~(np.isnan(prediction) | np.isnan(target))
+    if not mask.all():
+        print("NaN detected; corresponding entries will be ignored.")
+        target = target[mask]
+        prediction = prediction[mask]
 
-    if has_nan:
-        print("There are NaN values ​​in the array")
-
-    if np.std(prediction) == 0:
-        print('No fluctuations in forecast data')
-        return 0
-    
-    if np.std(target) == 0:
-        print('The real data does not fluctuate')
-        return 0
-
-    mean_target = np.mean(target)
-    mean_prediction = np.mean(prediction)
-
-    covariance = np.mean((target - mean_target) * (prediction - mean_prediction))
+    if target.size < 2 or prediction.size < 2:
+        print("Not enough valid samples to compute correlation.")
+        return 0.0, 0.0
 
     std_target = np.std(target)
     std_prediction = np.std(prediction)
+    if std_prediction == 0:
+        print("Predictions have no variance.")
+    if std_target == 0:
+        print("Ground truth has no variance.")
 
-    pearson_coefficient = covariance / (std_target * std_prediction)
+    if std_target == 0 or std_prediction == 0:
+        pearson_coefficient = 0.0
+    else:
+        mean_target = np.mean(target)
+        mean_prediction = np.mean(prediction)
+        covariance = np.mean((target - mean_target) * (prediction - mean_prediction))
+        pearson_coefficient = covariance / (std_target * std_prediction)
 
+    res = sp.stats.spearmanr(target, prediction, nan_policy='omit')
+    spearman_coefficient = 0.0 if np.isnan(res.correlation) else float(res.correlation)
 
-    return pearson_coefficient
+    return float(pearson_coefficient), float(spearman_coefficient)
