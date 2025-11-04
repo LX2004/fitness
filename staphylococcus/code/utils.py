@@ -9,94 +9,79 @@ import os
 
 
 def encode_essential(essential):
-
-    base_choice = ['NA', 'FALSE','TRUE']
+    base_choice = ['NA', 'FALSE', 'TRUE']
 
     if essential in base_choice:
-
-        # 进行独热向量编码
+        # One-hot encoding
         if essential == 'NA':
-            return np.array([1,0,0])
-        
+            return np.array([1, 0, 0])
         if essential == 'FALSE':
-            return np.array([0,1,0])
-        
+            return np.array([0, 1, 0])
         if essential == 'TRUE':
-            return np.array([0,0,1])
-        
-        # print("独热向量编码结果:", encoded_vector)
+            return np.array([0, 0, 1])
+        # print("One-hot vector:", encoded_vector)
     else:
-        print("输入的字符串不在给定的列表中，无法进行独热向量编码。")
-    
+        print("Input string is not in the allowed set; cannot perform one-hot encoding.")
     # return encoded_vector
 
-def encode_ori(ori):
 
+def encode_ori(ori):
     base_choice = ['+', '-']
 
-    # 进行独热向量编码
+    # One-hot encoding
     if ori in base_choice:
         if ori == '+':
-            return np.array([1,0])
-        
+            return np.array([1, 0])
         if ori == '-':
-            return np.array([0,1])
-
+            return np.array([0, 1])
     else:
-        print("输入的字符串不在给定的列表中，无法进行独热向量编码。")
-
+        print("Input string is not in the allowed set; cannot perform one-hot encoding.")
 
 
 def encode_coding(coding):
-
-    base_choice = ['NA', 'FALSE','TRUE']
+    base_choice = ['NA', 'FALSE', 'TRUE']
 
     if coding in base_choice:
-
-        # 进行独热向量编码
+        # One-hot encoding
         if coding == 'NA':
-            return np.array([1,0,0])
-        
+            return np.array([1, 0, 0])
         if coding == 'FALSE':
-            return np.array([0,1,0])
-        
+            return np.array([0, 1, 0])
         if coding == 'TRUE':
-            return np.array([0,0,1])
-        
-        # print("独热向量编码结果:", encoded_vector)
+            return np.array([0, 0, 1])
+        # print("One-hot vector:", encoded_vector)
     else:
-        print("输入的字符串不在给定的列表中，无法进行独热向量编码。")
+        print("Input string is not in the allowed set; cannot perform one-hot encoding.")
 
 
-def write_good_record(dict1,dict2,file_path):
-    # 合并两个字典
+def write_good_record(dict1, dict2, file_path):
+    # Merge the two dictionaries
     merged_dict = {**dict1, **dict2}
 
-    # 检查文件是否存在，如果不存在，则创建
+    # If the file does not exist, create it; otherwise append
     if not os.path.isfile(file_path):
         with open(file_path, 'w') as file:
             file.write(f"{merged_dict}\n")
     else:
         with open(file_path, 'a') as file:
             file.write(f"{merged_dict}\n")
-            
+
 
 def one_hot(sequence):
-    bases = ['A','T','G','C']
-    # 创建一个空的数组用于储存one-hot编码结果
+    bases = ['A', 'T', 'G', 'C']
+    # Initialize an array to store the one-hot encoding
     one_hot_encoded = np.zeros((len(sequence), len(bases)))
 
-    # 填充one-hot编码数组
+    # Fill the one-hot encoding array
     for i, base in enumerate(sequence):
         one_hot_encoded[i, bases.index(base)] = 1
-        
+
     return one_hot_encoded
 
 
-
-def loss_pierxun(output,target):
-    # print('target.shape = ',target.shape)
-    # print('output.shape = ',output.shape)
+def loss_pierxun(output, target):
+    # print('target.shape = ', target.shape)
+    # print('output.shape = ', output.shape)
 
     target_mean = torch.mean(target)
     outpu_mean = torch.mean(output)
@@ -104,50 +89,51 @@ def loss_pierxun(output,target):
     target_var = torch.std(target)
     output_var = torch.std(output)
 
-    p = torch.mean( (output - outpu_mean) * (target - target_mean) )
+    p = torch.mean((output - outpu_mean) * (target - target_mean))
 
     if output_var == 0:
-        
         p /= ((output_var + 1e-7) * target_var)
         return p
 
     p /= (output_var * target_var)
 
-    # print('皮尔逊相关系数：', p)
+    # print('Pearson correlation:', p)
 
     return p
 
+
 def text_build_vocab():
-    
     dic = [a for a in 'ATCG']
     dic += [a + b for a in 'ATCG' for b in 'ATCG']
     dic += [a + '0' for a in 'ATCG']
     return dic
 
+
 def transformer_index_to_ATCGseq(data):
-    #data = torch.randn(4, 100)  # 假设这是你的张量
-    # 将索引映射到 "A", "T", "C", "G"
+    # data = torch.randn(4, 100)  # Example tensor
+    # Map indices to "A", "T", "C", "G"
     max_indices = torch.argmax(data, dim=0)
     max_indices = max_indices.to('cpu').numpy()
-    # print('max_indices =',max_indices)
+    # print('max_indices =', max_indices)
     mapping = {0: "A", 1: "T", 2: "C", 3: "G"}
     sequence = [mapping[i] for i in max_indices]
-# 将结果连接成一个字符串
+    # Join into a string
     sequence_str = ''.join(sequence)
     return sequence_str
-    
+
+
 def trans_output_to_input(fake_im):
-    # 将由噪音生成的数据进行编码，得到输入评价器的数据。首先转化为原始序列，再转化为np数组
+    # Encode generator outputs for the evaluator: first convert to raw sequences, then to a NumPy array
     sample_seq = []
     for num_sample in range(fake_im.shape[0]):
-        sample_one = fake_im[num_sample,0,:,:]
+        sample_one = fake_im[num_sample, 0, :, :]
         sample_seq.append(transformer_index_to_ATCGseq(sample_one))
-    # print('sample_seq = ',sample_seq) 
+    # print('sample_seq = ', sample_seq)
     # pdb.set_trace()
     sample_result = []
     for seq in sample_seq:
         sample_result.append(Dimer_split_seqs(seq))
-        
+
     sample_result = np.array(sample_result)
     sample_result = np.expand_dims(sample_result, axis=1)
     tensor = torch.from_numpy(sample_result)
@@ -162,7 +148,7 @@ def Dimer_split_seqs(seq):
     ori_result = []
     dim_result = []
     pos_result = []
-    
+
     result = ''
 
     lens = len(seq)
@@ -171,7 +157,7 @@ def Dimer_split_seqs(seq):
         result += ' ' + seq[i].upper()
         ori_result.append(t.index(seq[i].upper()))
 
-    # dimer_encode
+    # Dimer encoding
     # result += ' '
     # result += 'SEP1'
 
@@ -180,9 +166,8 @@ def Dimer_split_seqs(seq):
     for i in range(lens):
         result += ' ' + seq[i:i + wt].upper()
         dim_result.append(t.index(seq[i:i + wt].upper()))
-    
-    # print('result = ',result)
-    
+
+    # print('result = ', result)
     # pdb.set_trace()
 
     pos_result += [i for i in range(1, lens + 1)]
@@ -192,76 +177,73 @@ def Dimer_split_seqs(seq):
     if ori_result[0] < 0:
         pdb.set_trace()
         print('seq = ', seq)
-    
+
     seq_r = []
     seq_r.append(ori_result)
     seq_r.append(dim_result)
     seq_r.append(pos_result)
-    # print('ori lenth = ',len(ori_result))
-    # print('dim lenth = ',len(dim_result))
-    # print('pos lenth = ',len(pos_result))
+    # print('ori length = ', len(ori_result))
+    # print('dim length = ', len(dim_result))
+    # print('pos length = ', len(pos_result))
     # pdb.set_trace()
     # seq = pd.concat([nuc_seq, pos_seq], axis=0, ignore_index=True)
 
     return seq_r
-def plot_test_prediction_result(output,label,epoch):
+
+
+def plot_test_prediction_result(output, label, epoch):
     val_pre = output.detach().cpu().numpy()
     val_pra = label.detach().cpu().numpy()
-    
+
     plt.close()
     plt.figure()
-    plt.plot(val_pre,label = 'val_pre')
-    plt.plot(val_pra,label = 'val_pra')
+    plt.plot(val_pre, label='val_pre')
+    plt.plot(val_pra, label='val_pra')
     plt.legend()
     plt.title('prediction value and practice value')
     plt.savefig(f'result/epoch={epoch}')
     plt.show()
+
+
     
-def compute_correlation_coefficient(output,label):
-    target = output.detach().cpu().numpy()
-    prediction = label.detach().cpu().numpy()
-    # 检查数组中是否存在NaN值
-    has_nan = np.isnan(prediction).any() or np.isnan(target).any()
+def compute_correlation_coefficient(output, label):
+    """
+    Return: (pearson_coefficient, spearman_coefficient)
+    """
+    # Convert to 1D float arrays
+    target = output.detach().cpu().numpy().astype(float).ravel()
+    prediction = label.detach().cpu().numpy().astype(float).ravel()
 
-    if has_nan:
-        print("数组中存在NaN值")
+    # Ignore samples where either side is NaN
+    mask = ~(np.isnan(prediction) | np.isnan(target))
+    if not mask.all():
+        print("NaN detected; corresponding entries will be ignored.")
+        target = target[mask]
+        prediction = prediction[mask]
 
-    if np.std(prediction) == 0:
-        print('预测数据没有波动')
-        return 0
-    
-    if np.std(target) == 0:
-        print('真实数据没有波动')
-        return 0
+    if target.size < 2 or prediction.size < 2:
+        print("Not enough valid samples to compute correlation.")
+        return 0.0, 0.0
 
-
-    # 计算平均值
-
-    mean_target = np.mean(target)
-    mean_prediction = np.mean(prediction)
-
-    # 计算协方差
-    covariance = np.mean((target - mean_target) * (prediction - mean_prediction))
-
-    # 计算标准差
+    # ===== Pearson =====
     std_target = np.std(target)
     std_prediction = np.std(prediction)
+    if std_prediction == 0:
+        print("Predictions have no variance.")
+    if std_target == 0:
+        print("Ground truth has no variance.")
 
-    # 计算皮尔逊相关系数
-    pearson_coefficient = covariance / (std_target * std_prediction)
+    if std_target == 0 or std_prediction == 0:
+        pearson_coefficient = 0.0
+    else:
+        mean_target = np.mean(target)
+        mean_prediction = np.mean(prediction)
+        covariance = np.mean((target - mean_target) * (prediction - mean_prediction))
+        pearson_coefficient = covariance / (std_target * std_prediction)
 
+    # ===== Spearman (via scipy) =====
+    res = sp.stats.spearmanr(target, prediction, nan_policy='omit')
+    spearman_coefficient = 0.0 if np.isnan(res.correlation) else float(res.correlation)
 
-    # print('target.shape = ',target.shape)
-    # print('prediction.shape = ',prediction.shape)
+    return float(pearson_coefficient), float(spearman_coefficient)
 
-
-    # # 使用NumPy的corrcoef函数计算皮尔逊相关系数
-    # correlation_matrix = np.corrcoef(target,prediction)
-    
-    # pearson_coefficient = correlation_matrix[0, 1]
-
-    return pearson_coefficient
-
-# oris = ['-','+','0']
-# for ori in oris:
-#     encode_ori(ori)
