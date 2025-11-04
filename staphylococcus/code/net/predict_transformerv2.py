@@ -118,6 +118,62 @@ class Predict_Staphylococcus_aureus(torch.nn.Module):
         return self.relu(output)
 
 
+class Predict_Staphylococcus_aureus_essential_ori_coding(torch.nn.Module):
+    def __init__(self,params):
+        super(Predict_Staphylococcus_aureus_essential_ori_coding, self).__init__()
+
+        self.dropout_rate_fc = params['dropout_rate_fc']
+        self.relu = nn.ReLU()
+
+        self.trans_ori_pos = Predict_encoder(nhead = params['num_head1'],layers = params['transformer_num_layers1'],hidden_dim=params['hidden_dim1'],latent_dim=params['latent_dim1'],embedding_dim=params['embedding_dim1'],seq_len=params['seq_len'],probs=params['dropout_rate1'],device='cuda')
+        self.trans_dim_pos = Predict_encoder(nhead = params['num_head2'],layers = params['transformer_num_layers2'],hidden_dim=params['hidden_dim2'],latent_dim=params['latent_dim2'],embedding_dim=params['embedding_dim2'],seq_len=params['seq_len'],probs=params['dropout_rate2'],device='cuda')
+
+        self.embedding_ori = torch.nn.Embedding(100, params['embedding_dim1'])
+        self.embedding_dim = torch.nn.Embedding(100, params['embedding_dim2'])
+
+        
+        # dropout层
+        self.ac = nn.LeakyReLU()
+        self.dropout = nn.Dropout(p=self.dropout_rate_fc)
+        
+        self.final_fc1 = nn.Linear(params['latent_dim1'] + params['latent_dim2'] + 6, params['fc_hidden1']) # 其中3+3+2+1=9为生物信息的预留位置
+        self.final_fc2 = nn.Linear(params['fc_hidden1'],params['fc_hidden2'])
+        self.final_fc3 = nn.Linear(params['fc_hidden2'],1)
+        # self.bio_fc1 = nn.Linear(13, params['fc_hidden1'])
+        
+    def forward(self, X, bio):
+
+        x = X.to(torch.int)
+        bio = bio.to(torch.float)
+        # Split input X: [bt,1,3,100]
+
+        # print('x = ',x[1])
+        input_ori = x[:, 0, :]
+        input_dim = x[:, 1, :]
+
+        embeded_ori = self.embedding_ori(input_ori)
+        embeded_dim = self.embedding_dim(input_dim)
+
+        
+        ori_pos = self.trans_ori_pos(embeded_ori)
+        dim_pos = self.trans_dim_pos(embeded_dim)
+        # print('end transformer encoder')
+        
+        output = torch.cat((ori_pos, dim_pos, bio), dim=-1) # 将transformer的输出和生物信息相融合
+        # output = self.mlp(ori_dim_pos)
+        
+        output = self.final_fc1(output)
+        output = self.ac(output)
+        # output = self.relu(output)
+        output = self.dropout(output)
+
+        output = self.final_fc2(output)
+        output = self.ac(output)
+
+        output = self.final_fc3(output)
+
+        return self.relu(output)
+
 
 
 class Predict_Staphylococcus_aureus_remove_bio(torch.nn.Module):
