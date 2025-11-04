@@ -149,8 +149,9 @@ def train(params, features_array, bios_array, labels_array):
                 # plot_test_prediction_result(output,target,epoch)
 
                 loss_test_one_epoch += loss_gen.detach().cpu().numpy() 
-            
-            correlation_coefficient = compute_correlation_coefficient(torch.cat(targets, dim=0), torch.cat(outputs, dim=0))
+
+
+            correlation_coefficient, spearman = compute_correlation_coefficient(torch.cat(targets, dim=0), torch.cat(outputs, dim=0))
             # pdb.set_trace()
 
             loss_test.append(loss_test_one_epoch/len(test_loader))
@@ -158,11 +159,9 @@ def train(params, features_array, bios_array, labels_array):
             if epoch % 10 == 0:
                 
                 print(
-                        f"Epoch[{epoch}/{params['train_epochs_num']}] ****Test loss: {loss_test_one_epoch/len(test_loader):.6f}********test correlation_coefficient:{correlation_coefficient}"
+                        f"Epoch[{epoch}/{params['train_epochs_num']}] ****Test loss: {loss_test_one_epoch/len(test_loader):.6f}********test PCC/spearman:{correlation_coefficient,spearman}"
                         )
             
-            metric.append(correlation_coefficient)
-
             if correlation_coefficient > 0.633:
 
                 # np.save('./result/loss_train_pierxun={0}.npy'.format(correlation_coefficient),np.array(loss_train))
