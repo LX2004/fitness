@@ -9,71 +9,53 @@ import os
 
 
 def encode_essential(essential):
-
-    base_choice = ['NA', 'FALSE','TRUE']
+    # Allowed categories
+    base_choice = ['NA', 'FALSE', 'TRUE']
 
     if essential in base_choice:
-
-        # 进行独热向量编码
+        # One-hot encoding
         if essential == 'NA':
-            return np.array([1,0,0])
-        
+            return np.array([1, 0, 0])
         if essential == 'FALSE':
-            return np.array([0,1,0])
-        
+            return np.array([0, 1, 0])
         if essential == 'TRUE':
-            return np.array([0,0,1])
-        
-        # print("独热向量编码结果:", encoded_vector)
+            return np.array([0, 0, 1])
+        # print("One-hot vector:", encoded_vector)
     else:
-        print("输入的字符串不在给定的列表中，无法进行独热向量编码。")
-    
-    # return encoded_vector
+        print("Input string is not in the allowed set; one-hot encoding cannot be performed.")
 
 def encode_ori(ori):
-
     base_choice = ['+', '-']
 
-    # 进行独热向量编码
+    # One-hot encoding
     if ori in base_choice:
         if ori == '+':
-            return np.array([1,0])
-        
+            return np.array([1, 0])
         if ori == '-':
-            return np.array([0,1])
-
+            return np.array([0, 1])
     else:
-        print("输入的字符串不在给定的列表中，无法进行独热向量编码。")
-
-
+        print("Input string is not in the allowed set; one-hot encoding cannot be performed.")
 
 def encode_coding(coding):
-
-    base_choice = ['NA', 'FALSE','TRUE']
+    base_choice = ['NA', 'FALSE', 'TRUE']
 
     if coding in base_choice:
-
-        # 进行独热向量编码
+        # One-hot encoding
         if coding == 'NA':
-            return np.array([1,0,0])
-        
+            return np.array([1, 0, 0])
         if coding == 'FALSE':
-            return np.array([0,1,0])
-        
+            return np.array([0, 1, 0])
         if coding == 'TRUE':
-            return np.array([0,0,1])
-        
-        # print("独热向量编码结果:", encoded_vector)
+            return np.array([0, 0, 1])
+        # print("One-hot vector:", encoded_vector)
     else:
-        print("输入的字符串不在给定的列表中，无法进行独热向量编码。")
+        print("Input string is not in the allowed set; one-hot encoding cannot be performed.")
 
-
-
-def write_good_record(dict1,dict2,file_path):
-    # 合并两个字典
+def write_good_record(dict1, dict2, file_path):
+    # Merge two dictionaries
     merged_dict = {**dict1, **dict2}
 
-    # 检查文件是否存在，如果不存在，则创建
+    # Create file if it does not exist; otherwise append
     if not os.path.isfile(file_path):
         with open(file_path, 'w') as file:
             file.write(f"{merged_dict}\n")
@@ -82,21 +64,19 @@ def write_good_record(dict1,dict2,file_path):
             file.write(f"{merged_dict}\n")
 
 def one_hot(sequence):
-    bases = ['A','T','G','C']
-    # 创建一个空的数组用于储存one-hot编码结果
+    bases = ['A', 'T', 'G', 'C']
+    # Initialize an array to store one-hot encodings
     one_hot_encoded = np.zeros((len(sequence), len(bases)))
 
-    # 填充one-hot编码数组
+    # Fill one-hot array
     for i, base in enumerate(sequence):
         one_hot_encoded[i, bases.index(base)] = 1
-        
+
     return one_hot_encoded
 
-
-
-def loss_pierxun(output,target):
-    # print('target.shape = ',target.shape)
-    # print('output.shape = ',output.shape)
+def loss_pierxun(output, target):
+    # print('target.shape = ', target.shape)
+    # print('output.shape = ', output.shape)
 
     target_mean = torch.mean(target)
     outpu_mean = torch.mean(output)
@@ -104,55 +84,54 @@ def loss_pierxun(output,target):
     target_var = torch.std(target)
     output_var = torch.std(output)
 
-    p = torch.mean( (output - outpu_mean) * (target - target_mean) )
+    p = torch.mean((output - outpu_mean) * (target - target_mean))
 
     if output_var == 0:
-        
         p /= ((output_var + 1e-7) * target_var)
         return p
 
     p /= (output_var * target_var)
 
-    # print('皮尔逊相关系数：', p)
+    # print('Pearson correlation:', p)
 
     return p
 
 def text_build_vocab():
-    
     dic = [a for a in 'ATCG']
     dic += [a + b for a in 'ATCG' for b in 'ATCG']
     dic += [a + '0' for a in 'ATCG']
     return dic
 
 def transformer_index_to_ATCGseq(data):
-    #data = torch.randn(4, 100)  # 假设这是你的张量
-    # 将索引映射到 "A", "T", "C", "G"
+    # data = torch.randn(4, 100)  # Example tensor
+    # Map indices to "A", "T", "C", "G"
     max_indices = torch.argmax(data, dim=0)
     max_indices = max_indices.to('cpu').numpy()
-    # print('max_indices =',max_indices)
+    # print('max_indices =', max_indices)
     mapping = {0: "A", 1: "T", 2: "C", 3: "G"}
     sequence = [mapping[i] for i in max_indices]
-# 将结果连接成一个字符串
+    # Join into a string
     sequence_str = ''.join(sequence)
     return sequence_str
-    
+
 def trans_output_to_input(fake_im):
-    # 将由噪音生成的数据进行编码，得到输入评价器的数据。首先转化为原始序列，再转化为np数组
+    # Convert generated noise output to evaluator input:
+    # first back to a raw sequence, then to a NumPy array
     sample_seq = []
     for num_sample in range(fake_im.shape[0]):
-        sample_one = fake_im[num_sample,0,:,:]
+        sample_one = fake_im[num_sample, 0, :, :]
         sample_seq.append(transformer_index_to_ATCGseq(sample_one))
-    # print('sample_seq = ',sample_seq) 
-    # pdb.set_trace()
+    # print('sample_seq = ', sample_seq)
     sample_result = []
     for seq in sample_seq:
         sample_result.append(Dimer_split_seqs(seq))
-        
+
     sample_result = np.array(sample_result)
     sample_result = np.expand_dims(sample_result, axis=1)
     tensor = torch.from_numpy(sample_result)
     fake_img = tensor.to('cuda')
     return fake_img
+
 
 
 def Dimer_split_seqs(seq):
