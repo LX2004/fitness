@@ -139,7 +139,7 @@ CRISFitFormer supports two complementary workflows:
 ### 2. Deep Learning-Based Prediction
 
 - Input: sgRNA sequences
-- Process: Transformer-based inference → Fitness score → Bad seed detection
+- Process: Transformer-based inference → Fitness score
 - Output: Predicted fitness values, sequence toxicity report
 
 
