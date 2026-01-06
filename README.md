@@ -157,5 +157,4 @@ CRISFitFormer supports three complementary workflows:
 - Output: Ranked gRNA list (best gRNA), with per-guide reports for efficiency and risk
 
 
-# Result.
-The model obtained from training is stored in the "models" folder, and details such as training parameters and metrics are recorded in the corresponding text files.
+
