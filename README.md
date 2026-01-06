@@ -124,7 +124,7 @@ python energy.py
 | 📊 **Fitness Calculation** | Upload CRISPRi screen data and compute fitness scores directly |
 | 🤖 **Fitness Prediction** | Use transformer-based models to predict fitness from guide RNA sequences |
 | 🧬 **Essentiality Profiling** | Automatically infer gene essentiality from fitness values |
-| 🧬✨ **gRNA Optimization** | Generate candidate gRNAs from target sequences (NGG PAM) and rank them using off-target risk, bad-seed screening, binding energy, and predicted efficiency |
+| ✨ **gRNA Optimization** | Generate candidate gRNAs from target sequences (NGG PAM) and rank them using off-target risk, bad-seed screening, binding energy, and predicted efficiency |
 | 📁 **Custom Input Support** | Accepts user-uploaded guide RNA and growth data |
 
 ## 🧪 System Architecture
