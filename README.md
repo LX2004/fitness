@@ -111,7 +111,8 @@ python energy.py
 
 #  🧬 CRISFitFormer---Online Platform
 **CRISFitFormer** is a deep learning framework and web-based platform for predicting bacterial cell fitness from genome-wide CRISPRi knockdown screens. It integrates both experimental fitness computation and transformer-based predictive modeling to support large-scale functional genomics analysis.
-![image](https://github.com/user-attachments/assets/83aa48d5-7c9f-4377-b64e-04a5c1de227a)
+![front](https://github.com/user-attachments/assets/3a702c04-2683-4217-89d5-e0d17e0fb757)
+
 
 ## 🌐 Online Platform
 
